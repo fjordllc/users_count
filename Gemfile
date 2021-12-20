@@ -1,8 +1,5 @@
-source "https://rubygems.org"
+# frozen_string_literal: true
 
-# Include the Ruby Functions Framework as a dependency.
-# gem "functions_framework", "~> 0.5"
-#
-# # Other function dependencies, for example:
-# # gem "package", "~> version"
-#
+source 'https://rubygems.org'
+
+gem 'functions_framework', '~> 1.0'
