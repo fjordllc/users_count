@@ -7,8 +7,6 @@ require 'json'
 AUTH_API_URL = 'https://bootcamp.fjord.jp/api/session'
 COUNT_API_URL = 'https://bootcamp.fjord.jp/api/admin/count.json'
 
-$logger = nil
-
 def fetch_token(login_name, password)
   response = Net::HTTP.post_form(
     URI.parse(AUTH_API_URL),
@@ -27,22 +25,30 @@ def post_to_discord(message, webhook_url)
   http.post(uri.path, params.to_json, headers)
 end
 
-def main
-  logger.info "LOGIN_NAME: #{ENV['LOGIN_NAME']}, WEBHOOK_URL: #{ENV['WEBHOOK_URL']}"
-  token = fetch_token(ENV['LOGIN_NAME'], ENV['PASSWORD'])
-  body = Net::HTTP.get(
-    COUNT_API_URL,
+def users_count(token)
+  uri = URI.parse(COUNT_API_URL)
+  http = Net::HTTP.new(uri.host, uri.port)
+  http.use_ssl = true
+  headers = {
     'Content-Type' => 'application/json',
     'Authorization' => "Bearer #{token}"
-  )
-  logger.info "body: #{body}"
-  message = "💬 今日の生徒数は#{JSON.parse(body)['users_count']}人です。"
+  }
+  response = http.get(uri.path, headers)
+  JSON.parse(response.body)['users_count']
+end
+
+def main
+  token = fetch_token(ENV['LOGIN_NAME'], ENV['PASSWORD'])
+  users_count = users_count(token)
+  message = "💬 今日の生徒数は#{users_count}人です。"
   post_to_discord(message, ENV['WEBHOOK_URL'])
   'OK'
 end
 
-FunctionsFramework.http 'users_count' do |request|
-  $logger = request.logger
-  request.logger.info "I received #{request.request_method} from #{request.url}!"
+FunctionsFramework.http 'http_users_count' do |_|
+  main
+end
+
+FunctionsFramework.cloud_event 'users_count' do |_|
   main
 end
