@@ -1,3 +1,9 @@
+GIT
+  remote: https://github.com/komagata/fjord_boot_camp.git
+  revision: 0f8d75d9103df54b39fb36d3696b424ac66a6ce3
+  specs:
+    fjord_boot_camp (0.1.0)
+
 GEM
   remote: https://rubygems.org/
   specs:
@@ -15,7 +21,8 @@ PLATFORMS
   ruby
 
 DEPENDENCIES
+  fjord_boot_camp!
   functions_framework (~> 1.0)
 
 BUNDLED WITH
-   2.2.30
+   2.2.33
